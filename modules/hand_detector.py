@@ -57,7 +57,7 @@ def main():
         ctime = time.time()
         fps = 1/(ctime-ptime)
         ptime = ctime
-        cv.putText(img, str(int(fps)),(10,70),cv.FONT_HERSHEY_SIMPLEX,1,(0,255,0),3)
+        cv.putText(img, f'FPS: {int(fps)}',(10,70),cv.FONT_HERSHEY_SIMPLEX,0.8,(255,255,0),2)
         cv.imshow("hands",img)
         cv.waitKey(1)
 

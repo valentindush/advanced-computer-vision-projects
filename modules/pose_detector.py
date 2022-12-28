@@ -58,7 +58,7 @@ def main():
         fps = 1/(curr_time - prev_time)
         prev_time = curr_time
 
-        cv.putText(img, str(int(fps)),(10,70),cv.FONT_HERSHEY_SIMPLEX,1,(0,255,0),3)
+        cv.putText(img, f'FPS: {int(fps)}',(10,70),cv.FONT_HERSHEY_SIMPLEX,0.8,(255,255,0),2)
 
         cv.imshow("Video", img)
         cv.waitKey(1)
