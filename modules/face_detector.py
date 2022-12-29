@@ -33,14 +33,14 @@ class Face_detector:
                 img = self.draw(img,bbox)
 
                 #percentage
-                cv.putText(img, f'{int(detection.score[0]*100)}%',(bbox[0],bbox[1]-20),cv.FONT_HERSHEY_DUPLEX,0.9,(255,0,255),2)
+                cv.putText(img, f'{int(detection.score[0]*100)}%',(bbox[0],bbox[1]-15),cv.FONT_HERSHEY_DUPLEX,0.7,(255,0,255),2)
 
         return img, bboxes
 
 
 
     
-    def draw(self, img, bbox, l=30, t=5, rt = 1):
+    def draw(self, img, bbox, l=20, t=3, rt = 1):
         x, y, w, h = bbox
         x1, y1 = x + w, y + h
 
