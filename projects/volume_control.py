@@ -3,6 +3,9 @@ import time
 import numpy as np
 import hand_detector as hd
 import math
+from ctypes import cast, POINTER
+from comtypes import CLSCTX_ALL
+from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
 
 #Wdth and height of the camera
 CAMERA_WIDTH , CAMERA_HEIGHT = 640, 480
@@ -17,18 +20,19 @@ ptime = 0
 
 detector = hd.hand_detector()
 
-ctypes import cast, POINTER
-from comtypes import CLSCTX_ALL
-from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
-
 devices = AudioUtilities.GetSpeakers()
-interface = devices.Activate(
-    IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
+interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
 volume = cast(interface, POINTER(IAudioEndpointVolume))
-volume.GetMute()
-volume.GetMasterVolumeLevel()
-volume.GetVolumeRange()
-volume.SetMasterVolumeLevel(-20.0, None)
+
+# volume.GetMute()
+# volume.GetMasterVolumeLevel()
+vol_range = volume.GetVolumeRange()
+volume.SetMasterVolumeLevel(0, None)
+min_vol = vol_range[0]
+max_vol = vol_range[1]
+
+vol = 0
+vol_bar = 400
 
 while True:
     success, img = cap.read()
@@ -59,10 +63,21 @@ while True:
             cv2.circle(img, (cx, cy),7, (0,0,255),cv2.FILLED)
 
 
+
+        vol = np.interp(length, [30,130], [min_vol, max_vol])
+        vol_bar = np.interp(length, [30,130],[400, 150])
+        vol_percentage = np.interp(length, [30,150], [0,100])
+        volume.SetMasterVolumeLevel(vol, None)
+
+        cv2.rectangle(img, (50, 150), (85,400), (255, 0, 0), 3)
+        cv2.rectangle(img, (50, int(vol_bar)), (85,400), (255, 0, 0), cv2.FILLED)
+        cv2.putText(img, f'Vol: {int(vol_percentage)}%',(50,450),cv2.FONT_HERSHEY_SIMPLEX,0.8,(255,0,0),2)
+
+
     ctime = time.time()
     fps = 1/(ctime-ptime)
     ptime = ctime  
 
-    cv2.putText(img, f'FPS: {int(fps)}',(10,50),cv2.FONT_HERSHEY_SIMPLEX,0.8,(255,255,0),2)
+    cv2.putText(img, f'FPS: {int(fps)}%',(10,50),cv2.FONT_HERSHEY_SIMPLEX,0.8,(255,255,0),2)
     cv2.imshow("Capture", img)
     cv2.waitKey(1)
